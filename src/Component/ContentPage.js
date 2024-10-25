@@ -1,5 +1,6 @@
 import Form from "./Form-registro"
 import SearchEngine from "./SearchEngine"
+import Students from "./Students"
 
 function ContentPage({buttonValue}) {
     if (buttonValue) {
@@ -9,7 +10,7 @@ function ContentPage({buttonValue}) {
       return (
         <>
           <SearchEngine></SearchEngine>
-          <Estudents></Estudents>
+          <Students></Students>
         </>
       )
     }
@@ -17,9 +18,6 @@ function ContentPage({buttonValue}) {
 
 
 
-function Estudents() {
-
-}
 
   
 export default ContentPage
