@@ -95,3 +95,48 @@ nav p {
   background-color: var(--bg-color);
 }
 
+
+/*---------SearchEngine-------*/
+
+.search-engine {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: auto;
+  margin-top: 12px;
+}
+
+.search-engine input,
+.search-engine input:active,
+.search-engine input:focus,
+.search-engine select {
+  background-color: var(--bg-color);
+  border: none;
+  border-bottom: solid 3px var(--gray-color);
+  color: var(--gray-color);
+  outline: none;
+  margin: 0 0 0 24px;
+  padding: 0;
+  }
+
+  .search-engine input::placeholder,
+  .search-engine select {
+    color: var(--gray-color);
+  }
+
+  .search-engine input,
+  .search-engine select {
+    width: 360px;
+    height: 48px;
+  }
+
+  .search-engine button {
+    margin: 12px 0 0 0;
+    width: 240px;
+    height: 28px;
+    border-radius: 36px;
+  }
+
+.search-engine button:hover {
+  background-color: var(--bg-color);
+}
