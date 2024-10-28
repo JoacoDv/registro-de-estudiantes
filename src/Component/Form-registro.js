@@ -23,7 +23,7 @@ function Form() {
     console.log(newStudent);
 
 
-    fetch('/api/data', {
+    fetch('http://localhost:5000/estudiantes', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
