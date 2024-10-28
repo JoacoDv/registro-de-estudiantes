@@ -19,7 +19,7 @@ function Form() {
   }
   function newStudent(e) {
     e.preventDefault()
-    const newStudent = { id: Math.random() ,nombre: name, apellido: lastname, materia: selectOption, descripcion: description};
+    const newStudent = {nombre: name, apellido: lastname, materia: selectOption, descripcion: description};
     console.log(newStudent);
 
 
