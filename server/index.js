@@ -123,6 +123,23 @@ app.get("/estudiantes", (req, res) => {
     })
 })
 
+app.get("/estudiantes/buscador", (req, res) => {
+    console.log("llega");
+    const {name, lastname, materia} = req.query
+    const query = "SELECT * FROM estudiantes WHERE nombre = ? OR apellido = ? OR materia = ?";
+    console.log(req.query)
+
+    db.all(query, [name, lastname, materia], (error, rows) => {
+        if (error) {
+            console.error("No se a podido realizar la busqueda");
+            res.status(500).json({error: "error al realizar la busqueda"});
+        } else {
+            console.log(rows)
+            res.status(200).json(rows)
+        }
+    })
+})
+
 app.put("/estudiantes", (req, res) => {
     const {id, nombre, apellido, materia, descripcion} = req.body;
     const query = "UPDATE estudiantes SET nombre = ?, apellido = ?, materia = ?, descripcion = ? WHERE id = ? "

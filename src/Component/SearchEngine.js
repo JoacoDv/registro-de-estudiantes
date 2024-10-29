@@ -1,6 +1,6 @@
 import {useState} from "react"
 
-function SearchEngine() {
+function SearchEngine({setStudents}) {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
   const [selectOption, setSelectOption] = useState("Materias")
@@ -14,8 +14,18 @@ function SearchEngine() {
     setSelectOption(e.target.value)
   }
   function search() {
-    const studentSearch = {nombre: name, apellido: lastname, materia: selectOption};
-    console.log(studentSearch);
+    
+    console.log("funciona")
+    fetch(`http://localhost:5000/estudiantes/buscador?name=${name}&lastname=${lastname}&materia=${selectOption}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(response => response.json())
+    .then(data => setStudents(data))
+    .catch(error => console.log(error))
+
     setName("");
     setLastname("");
     setSelectOption("Materia");

@@ -19,7 +19,7 @@ function ContentPage({buttonValue}) {
     .then(response => response.json())
     .then(data => setStudents(data))
     .catch(error => console.error("Error al obtener los estudiantes: ", error))
-}, [ setModificar, students]) 
+}, [ /* setStudents ,students */]) 
   
   if (buttonValue) {
       return <Form></Form>
@@ -27,7 +27,7 @@ function ContentPage({buttonValue}) {
     else {
       return (
         <>
-          <SearchEngine></SearchEngine>
+          <SearchEngine setStudents={setStudents}></SearchEngine>
           <Students students={students} setStudents={setStudents} setId={setId} modificarActivado={setModificar} setNombre={setNombre} setApellido={setApellido} setMateria={setMateria} setDescripcion={setDescripcion}></Students>
 {         <Modificador id={id} setModificar={setModificar} setNombre={setNombre} setApellido={setApellido} setMateria={setMateria} setDescripcion={setDescripcion}
           valorModificar={modificar} nombre={nombre} apellido={apellido} materia={materia} descripcion={descripcion}></Modificador>
