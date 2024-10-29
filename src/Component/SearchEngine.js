@@ -28,7 +28,7 @@ function SearchEngine({setStudents}) {
 
     setName("");
     setLastname("");
-    setSelectOption("Materia");
+    setSelectOption("Todas");
   }
     return (
       <div className="search-engine" >
@@ -36,8 +36,8 @@ function SearchEngine({setStudents}) {
           <input placeholder="Jhon" className="name" value={name} onChange={nameValue}></input>
           <input placeholder="Doe" className="lastname" value={lastname} onChange={lastnameValue}></input>
           <select className="materia" value={selectOption} onChange={optionsValue}>
-            <option select Value="Materias">Materias</option>
-            <option value="M">Matematica</option>
+            <option select >Todas</option>
+            <option >Matematica</option>
             <option>Literatura</option>
             <option>Ingles</option>
             <option>Fisica</option>

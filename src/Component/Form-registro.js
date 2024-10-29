@@ -41,7 +41,7 @@ function Form() {
     setName("");
     setLastname("");
     setDescription("");
-    setSelectOption("Materias");
+    setSelectOption("Todas");
   }
     return (
       <div className="form-container">
@@ -55,7 +55,7 @@ function Form() {
             <input id="lastname" value={lastname} onChange={valueLastname} placeholder="Doe"></input>
           </label> <br></br>
           <select className="select-form-registro" id="select" value={selectOption} onChange={optionValue}>
-            <option select >Materias</option>
+            <option select >Todas</option>
             <option>Matematica</option>
             <option>Literatura</option>
             <option>Ingles</option>

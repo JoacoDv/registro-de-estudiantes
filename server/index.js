@@ -124,18 +124,40 @@ app.get("/estudiantes", (req, res) => {
 })
 
 app.get("/estudiantes/buscador", (req, res) => {
-    console.log("llega");
-    const {name, lastname, materia} = req.query
-    const query = "SELECT * FROM estudiantes WHERE nombre = ? OR apellido = ? OR materia = ?";
-    console.log(req.query)
+    const {name, lastname, materia} = req.query;
+    let query = `SELECT * FROM estudiantes `; 
+    const params = []
+ 
+    //req.query params
+    console.log(name);
+    console.log(lastname);
+    console.log(materia);
 
-    db.all(query, [name, lastname, materia], (error, rows) => {
+    if(name) {
+        const queryName = `nombre='${name}' `;
+        params.push(queryName)                                              
+    }
+    if(lastname) {
+        const queryLastname = `apellido='${lastname}' `
+        params.push(queryLastname)                                        
+    }
+    if(materia !== "Todas") {
+        const queryMateria = `materia='${materia}' `
+        params.push(queryMateria)
+    }
+    if (params.length > 0) {
+        query += `WHERE ` + params.join("AND ")
+    }
+    console.log(query)
+
+    db.all(query, (error, rows) => {
         if (error) {
             console.error("No se a podido realizar la busqueda");
+            console.log(error)
             res.status(500).json({error: "error al realizar la busqueda"});
         } else {
-            console.log(rows)
-            res.status(200).json(rows)
+            console.log(rows);
+            res.status(200).json(rows);
         }
     })
 })
