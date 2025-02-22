@@ -23,7 +23,7 @@ function Form() {
     console.log(newStudent);
 
 
-    fetch('http://localhost:5000/estudiantes', {
+    fetch('https://registro-api-jkpk.onrender.com/estudiantes', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'

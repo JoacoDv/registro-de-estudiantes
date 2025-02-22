@@ -16,7 +16,7 @@ function SearchEngine({setStudents}) {
   function search() {
     
     console.log("funciona")
-    fetch(`http://localhost:5000/estudiantes/buscador?name=${name}&lastname=${lastname}&materia=${selectOption}`, {
+    fetch(`https://registro-api-jkpk.onrender.com/estudiantes/buscador?name=${name}&lastname=${lastname}&materia=${selectOption}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"

@@ -18,7 +18,7 @@ function Modificador({ id, nombre, apellido, materia, descripcion, setNombre, se
     function changeData(e) {
         e.preventDefault();
         
-        fetch("http://localhost:5000/estudiantes", {
+        fetch("https://registro-api-jkpk.onrender.com/estudiantes", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"

@@ -15,11 +15,11 @@ function ContentPage({buttonValue}) {
   const [students, setStudents] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/estudiantes")
+    fetch("https://registro-api-jkpk.onrender.com/estudiantes")
     .then(response => response.json())
     .then(data => setStudents(data))
     .catch(error => console.error("Error al obtener los estudiantes: ", error))
-}, [ /* setStudents ,students */]) 
+}, [ setStudents ,students ]) 
   
   if (buttonValue) {
       return <Form></Form>

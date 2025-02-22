@@ -14,7 +14,7 @@ function Students({students, setStudents ,setId, modificarActivado, setNombre, s
 
     function eliminarEstudiante(id) {
         console.log(id)
-        fetch("http://localhost:5000/estudiantes", {
+        fetch("https://registro-api-jkpk.onrender.com/estudiantes", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
