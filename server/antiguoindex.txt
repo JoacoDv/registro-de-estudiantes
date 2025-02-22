@@ -1,0 +1,94 @@
+const sqlite = require("sqlite3").verbose();
+const express = require("express");
+const cors = require("cors")
+const app = express();
+const PORT = 5000;
+
+app.use(express.json());
+app.use(cors(/* { origin: "http://localhost:3000" } */))
+
+const db = new sqlite.Database("./estudiantes.db", sqlite.OPEN_READWRITE, (error) => {
+    if (error) {
+        console.error("Error al conectar con la base de datos:", error.message);
+    } else {
+        console.log("Conexión exitosa a la base de datos");
+        
+        // Crear la tabla si no existe
+        const createTableQuery = `CREATE TABLE IF NOT EXISTS estudiantes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre VARCHAR(30) NOT NULL,
+            apellido VARCHAR(30) NOT NULL,
+            materia VARCHAR(30) NOT NULL,
+            descripcion VARCHAR(300)
+        )`;
+        
+        db.run(createTableQuery, (error) => {
+            if (error) {
+                console.error("Error al crear la tabla:", error.message);
+            } else {
+                console.log("Tabla 'estudiantes' verificada o creada exitosamente.");
+            }
+        });
+    }
+});
+
+app.get("/estudiantes", (req, res) => {
+    const query = "SELECT * FROM estudiantes"
+
+    db.all(query, (error, rows) => {
+        if(error) { 
+            console.log(error); 
+            res.status(500).json({ error: "Error al guardar los datos" });
+        }
+        else {
+            console.log("Datos obtenidos: ", rows)
+            res.status(200).json(rows)
+        }
+    })
+})
+
+// Ruta para insertar datos
+app.post("/estudiantes", (req, res) => {
+    const { name, lastname, selectOption, description } = req.body;
+
+    const query = `INSERT INTO estudiantes (nombre, apellido, materia, descripcion) VALUES (?, ?, ?, ?)`;
+
+    db.run(query, [name, lastname, selectOption, description], function(error) {
+        if (error) {
+            console.error("Error al guardar los datos en SQLite:", error.message);
+            res.status(500).json({ error: "Error al guardar los datos" });
+        } else {
+            console.log("Datos guardados:", name, lastname, selectOption, description);
+            res.status(201).json({ 
+                message: "Datos guardados exitosamente", 
+                data: { id: this.lastID, name, lastname, selectOption, description }
+            });
+        }
+    });
+});
+
+app.delete("/estudiantes", (req, res) => {
+    const {id, name} = req.body
+
+    const query = "DELETE FROM estudiantes WHERE id=?"
+
+    if (!id) {
+        console.log(id)
+        return res.status(400).json({ error: "Se requiere el ID del estudiante para eliminar" });
+    }
+
+    db.run(query, [id], (error) => {
+        if (error) {
+            console.error("No se ha podidio eliminar: ", error);
+            res.status(500).json({error: "No se puedo eliminar el estudiante"});
+        }
+        else {
+            console.log("Estudiante " + name + " se a eliminado");
+            res.status(200).json({ message: "El estudiante se a eliminado correctamente"})
+        }
+    })
+})
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});

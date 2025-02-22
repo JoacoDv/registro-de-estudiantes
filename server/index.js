@@ -1,168 +1,110 @@
-/* const express = require('express');
-const sqlite = require('sqlite3');
-const app = express();
-const PORT = 5000;
-const path = require("path");
-const dbPath = path.resolve(__dirname, "estudiantes.db");
-
-const db = new sqlite.Database(dbPath, sqlite.OPEN_READWRITE, (error) => {
-    if (error) {
-        console.error("Error al conectar con la base de datos:", error);
-    } else {
-        console.log("Conexión exitosa a la base de datos");
-    }
-});
-
-app.use(express.json());
-
-app.get('/api', (req, res) => {
-    res.json({ message: "Hello from the backend!" });
-});
-
-
-app.post("/api/data", (req, res) => {
-    const { name, lastname, selectOption, description } = req.body;
-
-    // Consulta SQL usando parámetros
-    const query = `INSERT INTO estudiantes (nombre, apellido, materia, descripcion) VALUES (?, ?, ?, ?)`;
-    const table = "CREATE TABLE IF NOT EXIST estudiantes (id INT PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(30) NOT NULL, apellido VARCHAR(30) NOT NULL, materia VARCHAR(30) NOT NULL, descripcion VARCHAR(300))"
-    
-    db.run(table, (error) => {
-        if (error) {
-            console.log(error)
-        }
-    })
-    db.run(query, [name, lastname, selectOption, description], function(error) {
-        if (error) {
-            console.error("Error al guardar los datos en SQLite:", error);
-            res.status(500).json({ error: "Error al guardar los datos" });
-        } else {
-            console.log(name, lastname, selectOption, description);
-            res.status(201).json({ 
-                message: "Datos guardados exitosamente", 
-                data: { id: this.lastID, name, lastname, selectOption, description }
-            });
-        }
-    });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
-
- */
-
-
-/* 
-// Configura la conexión a MySQL
-const db = mysql.createConnection({
-    host: 'localhost', // O la dirección de tu base de datos
-    user: 'root',
-    password: 'Jdv030903@',
-    database: 'estudiantes'
-});
-
-// Conéctate a la base de datos
-db.connect(error => {
-    if (error) {
-        console.error('Error al conectar a MySQL:', error);
-    } else {
-        console.log('Conectado a MySQL');
-    }
-}); */
-
-
-
-const sqlite = require("sqlite3").verbose();
 const express = require("express");
+const pkg = require("pg")
 const cors = require("cors")
 const app = express();
 const PORT = 5000;
+require('dotenv').config();
+
 
 app.use(express.json());
 app.use(cors(/* { origin: "http://localhost:3000" } */))
 
-const db = new sqlite.Database("./estudiantes.db", sqlite.OPEN_READWRITE, (error) => {
-    if (error) {
-        console.error("Error al conectar con la base de datos:", error.message);
-    } else {
-        console.log("Conexión exitosa a la base de datos");
-        
-        // Crear la tabla si no existe
-        const createTableQuery = `CREATE TABLE IF NOT EXISTS estudiantes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre VARCHAR(30) NOT NULL,
-            apellido VARCHAR(30) NOT NULL,
-            materia VARCHAR(30) NOT NULL,
-            descripcion VARCHAR(300)
-        )`;
-        
-        db.run(createTableQuery, (error) => {
-            if (error) {
-                console.error("Error al crear la tabla:", error.message);
-            } else {
-                console.log("Tabla 'estudiantes' verificada o creada exitosamente.");
-            }
-        });
+const { Pool } = pkg
+const pool = new Pool({
+  user: 'joaco',
+  host: 'dpg-cusgqqjqf0us739k9g4g-a',
+  database: 'database_41qg',
+  password: process.env.PGPASSWORD,
+  port: 5432,
+  ssl: { rejectUnauthorized: false },
+})
+
+pool.connect()
+  .then(() => console.log("🟢 Conectado a PostgreSQL"))
+  .catch(err => console.error("🔴 Error de conexión:", err));
+
+const createTableQuery = `
+  CREATE TABLE IF NOT EXISTS estudiantes (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL,
+    apellido VARCHAR(30) NOT NULL,
+    materia VARCHAR(30) NOT NULL,
+    descripcion TEXT
+  )
+`;
+
+async function setupDatabase() {
+     try {
+        await pool.query(createTableQuery);
+        console.log("✅ Tabla 'estudiantes' verificada o creada exitosamente.");
+     } catch (error) {
+        console.error("🔴 Error al conectar con la base de datos:", error.message)
+     }
+}
+
+setupDatabase()
+
+app.get("/estudiantes", async (req, res) => {
+    const query = "SELECT * FROM estudiantes";
+
+    try {
+        const { rows } = await pool.query(query);
+        console.log("Datos obtenidos:", rows);
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error al obtener los datos:", error);
+        res.status(500).json({ error: "Error al obtener los datos" });
     }
 });
 
-app.get("/estudiantes", (req, res) => {
-    const query = "SELECT * FROM estudiantes"
-
-    db.all(query, (error, rows) => {
-        if(error) { 
-            console.log(error); 
-            res.status(500).json({ error: "Error al guardar los datos" });
-        }
-        else {
-            console.log("Datos obtenidos: ", rows)
-            res.status(200).json(rows)
-        }
-    })
-})
-
-// Ruta para insertar datos
-app.post("/estudiantes", (req, res) => {
+app.post("/estudiantes", async (req, res) => {
     const { name, lastname, selectOption, description } = req.body;
 
-    const query = `INSERT INTO estudiantes (nombre, apellido, materia, descripcion) VALUES (?, ?, ?, ?)`;
+    const query = `
+        INSERT INTO estudiantes (nombre, apellido, materia, descripcion) 
+        VALUES ($1, $2, $3, $4) RETURNING id
+    `;
 
-    db.run(query, [name, lastname, selectOption, description], function(error) {
-        if (error) {
-            console.error("Error al guardar los datos en SQLite:", error.message);
-            res.status(500).json({ error: "Error al guardar los datos" });
-        } else {
-            console.log("Datos guardados:", name, lastname, selectOption, description);
-            res.status(201).json({ 
-                message: "Datos guardados exitosamente", 
-                data: { id: this.lastID, name, lastname, selectOption, description }
-            });
-        }
-    });
+    try {
+        const { rows } = await pool.query(query, [name, lastname, selectOption, description]);
+        const newId = rows[0].id;
+
+        console.log("Datos guardados:", name, lastname, selectOption, description);
+        res.status(201).json({ 
+            message: "Datos guardados exitosamente", 
+            data: { id: newId, name, lastname, selectOption, description }
+        });
+    } catch (error) {
+        console.error("Error al guardar los datos en PostgreSQL:", error.message);
+        res.status(500).json({ error: "Error al guardar los datos" });
+    }
 });
 
-app.delete("/estudiantes", (req, res) => {
-    const {id, name} = req.body
-
-    const query = "DELETE FROM estudiantes WHERE id=?"
+app.delete("/estudiantes", async (req, res) => {
+    const { id, name } = req.body;
 
     if (!id) {
-        console.log(id)
+        console.log(id);
         return res.status(400).json({ error: "Se requiere el ID del estudiante para eliminar" });
     }
 
-    db.run(query, [id], (error) => {
-        if (error) {
-            console.error("No se ha podidio eliminar: ", error);
-            res.status(500).json({error: "No se puedo eliminar el estudiante"});
+    const query = "DELETE FROM estudiantes WHERE id = $1";
+
+    try {
+        const result = await pool.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "No se encontró el estudiante con ese ID" });
         }
-        else {
-            console.log("EStudiante " + name + " se a eliminado");
-            res.status(200).json({ message: "El estudiante se a eliminado correctamente"})
-        }
-    })
-})
+
+        console.log("Estudiante " + name + " se ha eliminado");
+        res.status(200).json({ message: "El estudiante se ha eliminado correctamente" });
+    } catch (error) {
+        console.error("No se ha podido eliminar:", error);
+        res.status(500).json({ error: "No se pudo eliminar el estudiante" });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
