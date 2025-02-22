@@ -1,6 +1,6 @@
 import {useState} from "react"
 
-function SearchEngine() {
+function SearchEngine({setStudents}) {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
   const [selectOption, setSelectOption] = useState("Materias")
@@ -14,11 +14,21 @@ function SearchEngine() {
     setSelectOption(e.target.value)
   }
   function search() {
-    const studentSearch = {nombre: name, apellido: lastname, materia: selectOption};
-    console.log(studentSearch);
+    
+    console.log("funciona")
+    fetch(`http://localhost:5000/estudiantes/buscador?name=${name}&lastname=${lastname}&materia=${selectOption}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(response => response.json())
+    .then(data => setStudents(data))
+    .catch(error => console.log(error))
+
     setName("");
     setLastname("");
-    setSelectOption("Materia");
+    setSelectOption("Todas");
   }
     return (
       <div className="search-engine" >
@@ -26,8 +36,8 @@ function SearchEngine() {
           <input placeholder="Jhon" className="name" value={name} onChange={nameValue}></input>
           <input placeholder="Doe" className="lastname" value={lastname} onChange={lastnameValue}></input>
           <select className="materia" value={selectOption} onChange={optionsValue}>
-            <option select Value="Materias">Materias</option>
-            <option value="M">Matematica</option>
+            <option select >Todas</option>
+            <option >Matematica</option>
             <option>Literatura</option>
             <option>Ingles</option>
             <option>Fisica</option>

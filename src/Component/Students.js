@@ -1,7 +1,16 @@
 import {useState, useEffect} from "react"
 
-function Students() {
-    const [students, setStudents] = useState([]);
+function Students({students, setStudents ,setId, modificarActivado, setNombre, setApellido, setMateria, setDescripcion}) {
+    
+
+    function modificarEstudiantes(id, nombre, apellido, materia, descripcion) {
+        setId(id);
+        setNombre(nombre);
+        setApellido(apellido);
+        setMateria(materia);
+        setDescripcion(descripcion);
+        modificarActivado(true);
+    }
 
     function eliminarEstudiante(id) {
         console.log(id)
@@ -17,12 +26,7 @@ function Students() {
         .catch(error => console.error("No se a podido eliminar al estudiante", error))
     }
 
-    useEffect(() => {
-        fetch("http://localhost:5000/estudiantes")
-        .then(response => response.json())
-        .then(data => setStudents(data))
-        .catch(error => console.error("Error al obtener los estudiantes: ", error))
-    }, [eliminarEstudiante])
+    
     
     return students.map(({id, nombre, apellido, materia, descripcion}) => {
         return <div className="student-container">
@@ -32,7 +36,7 @@ function Students() {
             <p className="descripcion texto">Descripcion: {descripcion}</p>
             <div>
                 <button className="registrar" onClick={() => eliminarEstudiante(id)}>Borrar</button>
-                <button className="registrar">Modificar</button>
+                <button className="registrar" onClick={() => {modificarEstudiantes(id, nombre, apellido, materia, descripcion)}}>Modificar</button>
             </div>
         </div>
     })
